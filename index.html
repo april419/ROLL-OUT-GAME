@@ -47,6 +47,20 @@
   </section>
 
   <section id="appView" hidden>
+    <section id="nycSetup" class="nyc-setup" hidden aria-labelledby="nycSetupTitle">
+      <p class="label">One more thing</p>
+      <h1 id="nycSetupTitle">Which New York City borough are you in?</h1>
+      <p>We’ll use your borough to find nearby activities and A-grade restaurant inspection listings.</p>
+      <label for="borough">Choose your borough</label>
+      <select id="borough">
+        <option value="">Choose your borough</option>
+        <option>Bronx</option><option>Brooklyn</option><option>Manhattan</option>
+        <option>Queens</option><option>Staten Island</option>
+      </select>
+      <span class="err" id="e-borough"></span>
+      <button id="saveBorough" class="btn" type="button">Continue</button>
+    </section>
+    <div id="appMain">
     <div class="hello">
       <div><h1 id="hi">Hey there</h1><p id="cityLine"></p></div>
       <div class="filters" role="group" aria-label="What kind of roll">
@@ -59,8 +73,8 @@
     </div>
     <section id="restaurantDirectory" class="restaurant-directory" hidden aria-labelledby="restaurantTitle">
       <div>
-        <h2 id="restaurantTitle">Restaurants with an A inspection grade</h2>
-        <p class="fine">Browse official inspection records by metro, borough, and neighborhood.</p>
+        <h2 id="restaurantTitle">Nearby restaurants with official inspection records</h2>
+        <p class="fine">Search current official inspection data around your location, then narrow by borough, neighborhood, food type, or name.</p>
       </div>
       <div class="directory-filters">
         <label>Metro
@@ -78,14 +92,27 @@
             <option value="">Choose a borough first</option>
           </select>
         </label>
+        <label>Food type
+          <select id="restaurantCuisine">
+            <option value="">All food types</option>
+          </select>
+        </label>
         <label>Search
           <input id="restaurantSearch" type="search" placeholder="Restaurant, cuisine, or street">
         </label>
+        <label>Nearby distance
+          <select id="restaurantRadius">
+            <option value="1609.34">1 mile</option>
+            <option value="8046.72" selected>5 miles</option>
+            <option value="16093.4">10 miles</option>
+          </select>
+        </label>
       </div>
+      <button id="useRestaurantLocation" class="btn ghost" type="button">Use my location to find nearby restaurants</button>
       <p id="restaurantStatus" class="fine" role="status" aria-live="polite"></p>
       <div id="restaurantResults" class="restaurant-results"></div>
       <button id="moreRestaurants" class="btn ghost" type="button" hidden>Show more</button>
-      <p class="fine">NYC inspection grades are from the <a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j" target="_blank" rel="noopener noreferrer">NYC DOHMH Restaurant Inspection Results</a> dataset. Inspection records can change; check the official source for the latest status. Other metros will appear here when a verified official A-grade feed is connected.</p>
+      <p class="fine">Nearby results use official health inspection data: NYC A-grade records from <a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j" target="_blank" rel="noopener noreferrer">NYC DOHMH</a> and Chicago pass/fail inspections from <a href="https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5" target="_blank" rel="noopener noreferrer">Chicago Data Portal</a>. These are inspection records, not a complete or real-time inventory of every food business. Other metros are not connected yet.</p>
     </section>
     <div id="table" class="table">
       <div class="dicezone">
@@ -111,6 +138,7 @@
     <div class="tray history">
       <h3>Recent rolls</h3>
       <div id="recent" class="recent"></div>
+    </div>
     </div>
   </section>
 

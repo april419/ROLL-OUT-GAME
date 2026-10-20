@@ -61,6 +61,14 @@ form.card h2{font-size:1.5rem}
 .filters button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 15px;font-weight:600;cursor:pointer;font-size:.92rem;transition:all .18s ease}
 .filters button:hover{transform:translateY(-1px)}
 .filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.nyc-setup{max-width:560px;margin:4vh auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:14px;box-shadow:0 12px 26px rgba(17,32,58,.06)}
+.nyc-setup h1{font-size:clamp(1.8rem,4vw,2.5rem)}
+.nyc-setup p{color:var(--muted)}
+.nyc-setup label{font-weight:600}
+.nyc-setup select{width:100%;padding:11px 13px;border-radius:11px;border:1.5px solid var(--line);background:var(--soft)}
+.nyc-setup .err{min-height:1em}
+.nyc-setup .btn{align-self:flex-start}
+#appMain{display:flex;flex-direction:column;gap:24px}
 .restaurant-directory{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:16px}
 .restaurant-directory h2{font-size:1.6rem}
 .directory-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
