@@ -30,7 +30,18 @@ window.SOLO = [
   { t: "Grow herbs on your windowsill", s: "Basil and mint are forgiving. Buy one plant, not seeds, and water when the soil is dry.", cost: "Under $10", time: "5 min a day" },
   { t: "Try a free language app streak", s: "Pick the language of a place you want to visit and do one lesson before bed.", cost: "Free", time: "10 min" },
   { t: "Make a zine about your neighborhood", s: "Fold one sheet of paper into an 8 page booklet. Fill it with things only locals know.", cost: "Free", time: "1 hour" },
-  { t: "Start a book in a genre you never read", s: "Ask a librarian for their favorite in that genre. Read 20 pages tonight.", cost: "Free with library card", time: "30 min" }
+  { t: "Start a book in a genre you never read", s: "Ask a librarian for their favorite in that genre. Read 20 pages tonight.", cost: "Free with library card", time: "30 min" },
+  { t: "Try hand embroidery", s: "Start with a beginner kit, hoop and a few thread colors. Stitch a simple shape onto scrap fabric.", cost: "Under $20", time: "1 hour" },
+  { t: "Explore astrology or tarot", s: "Borrow a beginner guide or deck from the library and use one card or chart as a creative reflection prompt.", cost: "Free to $25", time: "30 min" },
+  { t: "Make something with air dry clay", s: "Use a small beginner pack to shape a trinket dish or magnet, then follow the package drying instructions.", cost: "Under $15", time: "1 hour" },
+  { t: "Blend a cozy herbal tea", s: "Combine food-grade herbs from a trusted shop, check ingredient guidance, and label your blend. Avoid unknown foraged plants.", cost: "Under $15", time: "30 min" },
+  { t: "Press fall leaves and flowers", s: "Collect only where permitted, place a few leaves between absorbent paper inside a heavy book, and leave them to dry.", cost: "Free", time: "15 min, then wait" },
+  { t: "Paint tiny watercolor postcards", s: "Use a travel watercolor set and postcard-sized paper. Paint one small view or object in 15 minutes.", cost: "Under $20", time: "15 min" },
+  { t: "Make a candle at home", s: "Try a beginner kit and follow its temperature and fire-safety directions carefully.", cost: "Under $30", time: "1 to 2 hours" },
+  { t: "Start a home kombucha project", s: "Read a reputable food-safety guide first, then use clean equipment and a tested beginner recipe.", cost: "Under $25", time: "30 min setup, then ferment" },
+  { t: "Start a windowsill or vertical garden", s: "Choose one compact herb or leafy green suited to your light, and set up a pot with drainage.", cost: "Under $20", time: "30 min" },
+  { t: "Build a home café and journaling corner", s: "Make a favorite coffee, matcha or latte, set out a notebook, and spend 15 minutes writing or sketching.", cost: "Free to $15", time: "30 min" },
+  { t: "Go thrifting with a $15 challenge", s: "Pick one category, set a firm budget, and look for one statement piece you will actually use.", cost: "Up to $15", time: "1 to 2 hours" }
 ];
 
 window.PEOPLE = [
@@ -43,7 +54,17 @@ window.PEOPLE = [
   { t: "Play pickup volleyball or pickleball", s: "Search for open play hours at a rec center. Players rotate in, so you just show up.", cost: "Free to $10", time: "1 to 2 hours" },
   { t: "Attend a trivia night alone", s: "Tell the host you're solo. Teams almost always need one more person.", cost: "Price of a drink", time: "2 hours" },
   { t: "Join a group bike ride", s: "Look for no drop rides labeled social or beginner. Nobody gets left behind.", cost: "Free", time: "90 min" },
-  { t: "Try a dance class for total beginners", s: "Salsa and line dancing classes rotate partners, so you meet the whole room.", cost: "$15 to $25", time: "1 hour" }
+  { t: "Try a dance class for total beginners", s: "Salsa and line dancing classes rotate partners, so you meet the whole room.", cost: "$15 to $25", time: "1 hour" },
+  { t: "Join a local run club", s: "Search for a social beginner-friendly group in your area and check its pace and meeting details before you go.", cost: "Free", time: "1 hour" },
+  { t: "Have dinner with new people", s: "Find a hosted group dinner or ticketed supper club that explains its format, location and cost up front.", cost: "Varies", time: "2 to 3 hours" },
+  { t: "Try a phone-free social event", s: "Look for a local phone-free meetup, confirm its phone policy, and bring a conversation starter.", cost: "Varies", time: "1 to 2 hours" },
+  { t: "Join a book club or silent reading meetup", s: "Check your library, bookstore or local event listings for a welcoming group; bring any book you like.", cost: "Free to $15", time: "1 to 2 hours" },
+  { t: "Try a friend-finding app meetup", s: "Choose a reputable friend-finding service, review its safety settings, and meet new people in a public place.", cost: "Free to paid", time: "1 to 2 hours" },
+  { t: "Go to an in-person singles event", s: "Find a hosted event that fits your age range and interests, and check the venue and ticket terms.", cost: "Varies", time: "1 to 2 hours" },
+  { t: "Find a niche meetup group", s: "Pick an interest like board games, photography, language exchange or hiking, then RSVP to a public group event.", cost: "Free to $20", time: "1 to 3 hours" },
+  { t: "Make something at a group craft night", s: "Book a beginner pottery, embroidery or candle-making workshop and ask whether materials are included.", cost: "$15 to $60", time: "1 to 2 hours" },
+  { t: "Try a sober dance night or morning rave", s: "Look for an alcohol-free dance event nearby and check its schedule, accessibility and entry details.", cost: "Free to $30", time: "1 to 3 hours" },
+  { t: "Join a guided nature walk", s: "Find a local naturalist-led walk, dress for the route, and enjoy observing plants without eating wild finds.", cost: "Free to $25", time: "1 to 2 hours" }
 ];
 
 window.CITIES = {
