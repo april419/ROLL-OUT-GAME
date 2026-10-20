@@ -57,7 +57,37 @@
         <button data-f="restaurant" aria-pressed="false">Restaurants</button>
       </div>
     </div>
-    <div class="table">
+    <section id="restaurantDirectory" class="restaurant-directory" hidden aria-labelledby="restaurantTitle">
+      <div>
+        <h2 id="restaurantTitle">Restaurants with an A inspection grade</h2>
+        <p class="fine">Browse official inspection records by metro, borough, and neighborhood.</p>
+      </div>
+      <div class="directory-filters">
+        <label>Metro
+          <select id="restaurantMetro"></select>
+        </label>
+        <label>Borough
+          <select id="restaurantBorough">
+            <option value="">All boroughs</option>
+            <option>Bronx</option><option>Brooklyn</option><option>Manhattan</option>
+            <option>Queens</option><option>Staten Island</option>
+          </select>
+        </label>
+        <label>Neighborhood
+          <select id="restaurantNeighborhood" disabled>
+            <option value="">Choose a borough first</option>
+          </select>
+        </label>
+        <label>Search
+          <input id="restaurantSearch" type="search" placeholder="Restaurant, cuisine, or street">
+        </label>
+      </div>
+      <p id="restaurantStatus" class="fine" role="status" aria-live="polite"></p>
+      <div id="restaurantResults" class="restaurant-results"></div>
+      <button id="moreRestaurants" class="btn ghost" type="button" hidden>Show more</button>
+      <p class="fine">NYC inspection grades are from the <a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j" target="_blank" rel="noopener noreferrer">NYC DOHMH Restaurant Inspection Results</a> dataset. Inspection records can change; check the official source for the latest status. Other metros will appear here when a verified official A-grade feed is connected.</p>
+    </section>
+    <div id="table" class="table">
       <div class="dicezone">
         <div class="die" aria-hidden="true">
           <div class="die-cube" id="dieCube">

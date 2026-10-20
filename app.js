@@ -27,17 +27,36 @@
     city: ["t-city", "Explore your city"],
     restaurant: ["t-city", "Restaurant"]
   };
+  const RESTAURANT_METROS = [
+    "New York City", "Chicago", "Los Angeles", "Houston", "Philadelphia",
+    "Dallas", "Atlanta", "Boston", "Seattle", "San Francisco", "Miami"
+  ];
+  const NYC_INSPECTIONS_URL = "https://data.cityofnewyork.us/resource/43nn-pn8j.json";
+  const NYC_NEIGHBORHOODS_URL = "https://data.cityofnewyork.us/resource/9nt8-h7nd.json";
+  const NYC_PAGE_SIZE = 5000;
 
   let user = null;
   let filter = "any";
   let current = null;
   let modalTrigger = null;
+  let restaurantRows = [];
+  let restaurantNeighborhoods = [];
+  let restaurantRequest = 0;
+  let directoryController = null;
+  let visibleRestaurantCount = 0;
 
   window.CITYLIST.forEach((city) => {
     const option = document.createElement("option");
     option.value = city;
     option.textContent = city;
     $("city").appendChild(option);
+  });
+
+  RESTAURANT_METROS.forEach((city) => {
+    const option = document.createElement("option");
+    option.value = city;
+    option.textContent = city;
+    $("restaurantMetro").appendChild(option);
   });
 
   const validationRules = {
@@ -114,6 +133,169 @@
   function getCityRestaurant(city) {
     const restaurants = window.RESTAURANTS[city] || window.RESTAURANTS["Other city"] || [];
     return restaurants.length ? pick(restaurants) : null;
+  }
+
+  async function fetchNYCRestaurants(borough, signal, onPage) {
+    const rows = [];
+    const where = borough ? `grade='A' AND boro='${borough}'` : "grade='A'";
+
+    for (let offset = 0; ; offset += NYC_PAGE_SIZE) {
+      const params = new URLSearchParams({
+        "$select": "camis,dba,boro,building,street,zipcode,grade,grade_date,inspection_date,nta,cuisine_description,latitude,longitude",
+        "$where": where,
+        "$group": "camis,dba,boro,building,street,zipcode,grade,grade_date,inspection_date,nta,cuisine_description,latitude,longitude",
+        "$order": "grade_date DESC,inspection_date DESC",
+        "$limit": String(NYC_PAGE_SIZE),
+        "$offset": String(offset)
+      });
+      const response = await fetch(`${NYC_INSPECTIONS_URL}?${params}`, { signal });
+      if (!response.ok) throw new Error(`NYC inspection data returned HTTP ${response.status}.`);
+      const page = await response.json();
+      rows.push(...page);
+      onPage(rows.length);
+      if (page.length < NYC_PAGE_SIZE) break;
+    }
+
+    const newestByRestaurant = new Map();
+    rows.forEach((row) => {
+      if (!row.camis || newestByRestaurant.has(row.camis)) return;
+      newestByRestaurant.set(row.camis, row);
+    });
+    return [...newestByRestaurant.values()];
+  }
+
+  async function fetchNYCNeighborhoods(borough, signal) {
+    const params = new URLSearchParams({
+      "$select": "ntaname,boroname,the_geom",
+      "$where": `boroname='${borough}'`,
+      "$limit": "500"
+    });
+    const response = await fetch(`${NYC_NEIGHBORHOODS_URL}?${params}`, { signal });
+    if (!response.ok) throw new Error(`NYC neighborhood data returned HTTP ${response.status}.`);
+    return response.json();
+  }
+
+  function pointInRing(longitude, latitude, ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i];
+      const [xj, yj] = ring[j];
+      if ((yi > latitude) !== (yj > latitude) &&
+          longitude < ((xj - xi) * (latitude - yi)) / (yj - yi) + xi) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  function pointInNeighborhood(longitude, latitude, neighborhood) {
+    const geometry = neighborhood.the_geom;
+    if (!geometry) return false;
+    const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+    return polygons.some((polygon) =>
+      pointInRing(longitude, latitude, polygon[0]) &&
+      !polygon.slice(1).some((hole) => pointInRing(longitude, latitude, hole))
+    );
+  }
+
+  function getNeighborhoodName(row) {
+    const latitude = Number(row.latitude);
+    const longitude = Number(row.longitude);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return "";
+    const neighborhood = restaurantNeighborhoods.find((item) =>
+      pointInNeighborhood(longitude, latitude, item)
+    );
+    return neighborhood ? neighborhood.ntaname : "";
+  }
+
+  function renderRestaurantResults() {
+    const results = $("restaurantResults");
+    const neighborhood = $("restaurantNeighborhood").value;
+    const search = $("restaurantSearch").value.trim().toLocaleLowerCase();
+    const matches = restaurantRows.filter((row) => {
+      const neighborhoodName = row.neighborhood || row.nta || "";
+      if (neighborhood && row.neighborhood !== neighborhood) return false;
+      const searchable = [
+        row.dba, row.boro, row.building, row.street, row.zipcode,
+        row.cuisine_description, neighborhoodName, row.nta
+      ].join(" ").toLocaleLowerCase();
+      return !search || searchable.includes(search);
+    });
+    const visible = matches.slice(0, visibleRestaurantCount);
+    $("restaurantStatus").textContent = matches.length
+      ? `${matches.length.toLocaleString()} restaurant${matches.length === 1 ? "" : "s"} with an A-grade inspection record${visible.length < matches.length ? ` · Showing ${visible.length.toLocaleString()}` : ""}.`
+      : "No restaurants match these filters.";
+    $("moreRestaurants").hidden = visible.length >= matches.length;
+    results.innerHTML = visible.map((row) => {
+      const address = [row.building, row.street].filter(Boolean).join(" ");
+      const fullAddress = [address, row.boro, "NY"].filter(Boolean).join(", ");
+      const inspected = row.grade_date || row.inspection_date;
+      const date = inspected
+        ? new Date(inspected).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+        : "Date not listed";
+      const area = row.neighborhood || row.nta || row.boro;
+      const mapUrl = window.buildMapsUrl(`${row.dba} ${fullAddress}`, "google");
+      return `<article class="restaurant-result">
+        <span class="grade">A inspection grade</span>
+        <h3>${esc(row.dba || "Unnamed restaurant")}</h3>
+        <p>${esc(fullAddress)}${row.zipcode ? ` ${esc(row.zipcode)}` : ""}</p>
+        <p class="fine">${esc(area || "Neighborhood not listed")}${row.cuisine_description ? ` · ${esc(row.cuisine_description)}` : ""}</p>
+        <p class="fine">Grade date: ${esc(date)}</p>
+        <div class="map-links"><a href="${mapUrl}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a></div>
+      </article>`;
+    }).join("");
+  }
+
+  async function loadRestaurantDirectory() {
+    const requestId = ++restaurantRequest;
+    if (directoryController) directoryController.abort();
+    directoryController = new AbortController();
+    const metro = $("restaurantMetro").value;
+    const borough = $("restaurantBorough").value;
+    const controller = directoryController;
+    restaurantRows = [];
+    restaurantNeighborhoods = [];
+    visibleRestaurantCount = 50;
+    $("restaurantResults").innerHTML = "";
+    $("moreRestaurants").hidden = true;
+    $("restaurantSearch").value = "";
+    $("restaurantBorough").disabled = metro !== "New York City";
+    $("restaurantNeighborhood").disabled = metro !== "New York City" || !borough;
+    $("restaurantNeighborhood").innerHTML = borough && metro === "New York City"
+      ? '<option value="">All neighborhoods</option>'
+      : '<option value="">Choose a borough first</option>';
+
+    if (metro !== "New York City") {
+      $("restaurantStatus").textContent = `An official A-grade inspection feed is not connected for ${metro} yet. This metro is listed for future coverage; no ratings are inferred from other inspection systems.`;
+      return;
+    }
+
+    $("restaurantStatus").textContent = "Loading official NYC inspection records…";
+    try {
+      const [rows, neighborhoods] = await Promise.all([
+        fetchNYCRestaurants(borough, controller.signal, (loaded) => {
+          if (requestId === restaurantRequest) {
+            $("restaurantStatus").textContent = `Loading official NYC inspection records… ${loaded.toLocaleString()} records checked.`;
+          }
+        }),
+        borough ? fetchNYCNeighborhoods(borough, controller.signal) : Promise.resolve([])
+      ]);
+      if (requestId !== restaurantRequest) return;
+      restaurantNeighborhoods = neighborhoods;
+      restaurantRows = rows.map((row) => ({
+        ...row,
+        neighborhood: borough ? getNeighborhoodName(row) : ""
+      }));
+      if (borough && neighborhoods.length) {
+        const names = [...new Set(neighborhoods.map((item) => item.ntaname).filter(Boolean))].sort();
+        $("restaurantNeighborhood").innerHTML = '<option value="">All neighborhoods</option>' +
+          names.map((name) => `<option value="${esc(name)}">${esc(name)}</option>`).join("");
+      }
+      renderRestaurantResults();
+    } catch (error) {
+      if (requestId !== restaurantRequest || error.name === "AbortError") return;
+      $("restaurantStatus").textContent = `Could not load official NYC inspection data: ${error.message}`;
+    }
   }
 
   function getActivityPlace(kind, city) {
@@ -336,8 +518,29 @@
     button.onclick = () => {
       filter = button.dataset.f;
       document.querySelectorAll(".filters button").forEach((item) => item.setAttribute("aria-pressed", item === button ? "true" : "false"));
-      roll(false);
+      if (filter === "restaurant") {
+        $("table").hidden = true;
+        $("restaurantDirectory").hidden = false;
+        const preferredMetro = RESTAURANT_METROS.includes(user.city) ? user.city : "New York City";
+        $("restaurantMetro").value = preferredMetro;
+        loadRestaurantDirectory();
+      } else {
+        restaurantRequest++;
+        if (directoryController) directoryController.abort();
+        $("restaurantDirectory").hidden = true;
+        $("table").hidden = false;
+        roll(false);
+      }
     };
+  });
+
+  $("restaurantMetro").addEventListener("change", loadRestaurantDirectory);
+  $("restaurantBorough").addEventListener("change", loadRestaurantDirectory);
+  $("restaurantNeighborhood").addEventListener("change", renderRestaurantResults);
+  $("restaurantSearch").addEventListener("input", renderRestaurantResults);
+  $("moreRestaurants").addEventListener("click", () => {
+    visibleRestaurantCount += 50;
+    renderRestaurantResults();
   });
 
   ["bookingDate", "bookingTime", "bookingParty"].forEach((id) => $(id).addEventListener("change", updateBookingSummary));

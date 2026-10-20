@@ -61,6 +61,18 @@ form.card h2{font-size:1.5rem}
 .filters button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 15px;font-weight:600;cursor:pointer;font-size:.92rem;transition:all .18s ease}
 .filters button:hover{transform:translateY(-1px)}
 .filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.restaurant-directory{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.restaurant-directory h2{font-size:1.6rem}
+.directory-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.directory-filters label{display:flex;flex-direction:column;gap:5px;font-size:.9rem;font-weight:600}
+.directory-filters select,.directory-filters input{width:100%;padding:10px 12px;border-radius:11px;border:1.5px solid var(--line);background:var(--soft)}
+.restaurant-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.restaurant-result{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.restaurant-result h3{font-size:1.1rem}
+.restaurant-result .grade{align-self:flex-start;border-radius:999px;background:#dff4e8;color:#17663f;padding:3px 9px;font-size:.78rem;font-weight:700}
+.restaurant-result .map-links{margin-top:4px}
+.restaurant-directory a{color:var(--solo)}
+.restaurant-directory #moreRestaurants{align-self:center}
 .table{display:grid;grid-template-columns:240px 1fr;gap:28px}
 .dicezone{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;box-shadow:0 12px 26px rgba(17,32,58,.06);perspective:900px;perspective-origin:center 45%}
 .die{--cube-depth:50px;position:relative;width:132px;height:132px;display:grid;place-items:center;flex:none;background:transparent;perspective:900px;transform-style:preserve-3d}
@@ -134,6 +146,7 @@ footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);paddi
 
 @media (max-width:820px){
   .auth,.table{grid-template-columns:1fr}
+  .directory-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
   .dicezone{flex-direction:row;flex-wrap:wrap}
   .die{--cube-depth:38px;width:96px;height:96px}
   .die-cube{width:76px;height:76px}
@@ -142,4 +155,4 @@ footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);paddi
   .rollbtn{width:auto;flex:1}
 }
 @media (max-width:480px){.booking-options{grid-template-columns:1fr}.booking-options label:first-child{grid-column:auto}}
-@media (max-width:480px){.grid2{grid-template-columns:1fr} form.card,.idea{padding:20px}}
+@media (max-width:480px){.grid2,.directory-filters,.restaurant-results{grid-template-columns:1fr} form.card,.idea,.restaurant-directory{padding:20px}}
